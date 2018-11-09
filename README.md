@@ -1,2 +1,2 @@
 # TwitterBot
-![](bot.jpg)
+![](bot.JPG)
