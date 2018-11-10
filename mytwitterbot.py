@@ -1,9 +1,3 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Thu Nov  8 20:45:51 2018
-
-@author: kevin
-"""
 
 import tweepy
 import tkinter
@@ -182,3 +176,87 @@ label7.pack()
 E7.pack()
 submit.pack(side=BOTTOM)
 root.mainloop()
+"""
+import re # for preprocessing
+import pickle
+import tweepy
+from tweepy import OAuthHandler
+
+# Initialize the keys
+consumer_key = ''
+consumer_secret = '' 
+access_token = ''
+access_token_secret = '' 
+
+auth = OAuthHandler(consumer_key, consumer_secret)
+auth.set_access_token(access_token, access_token_secret)
+args = ['google'] # tweets containing this word
+api = tweepy.API(auth, timeout=10)
+# after 10 seconds, it will stop looking
+# for tweets that contain 'facebook'
+
+# fetching real time tweets
+listOfTweets = []
+query = args[0] # what we are looking for i.e. tweets with 'facebook' in them
+if len(args) == 1:
+    for status in tweepy.Cursor(api.search, q=query+" -filter:retweets", lang='en', result_type='recent').items(100):
+        listOfTweets.append(status.text)
+
+totalPositives = 0
+totalNegs = 0
+
+with open('tfidfmodel.pickle', 'rb') as f:
+    vectorizer = pickle.load(f)
+with open('classifier.pickle', 'rb') as f:
+    clf = pickle.load(f)
+    
+# preprocess the tweets
+# Preprocessing the tweets
+for tweet in listOfTweets:
+    tweet = re.sub(r"^https://t.co/[a-zA-Z0-9]*\s", " ", tweet)
+    tweet = re.sub(r"\s+https://t.co/[a-zA-Z0-9]*\s", " ", tweet)
+    tweet = re.sub(r"\s+https://t.co/[a-zA-Z0-9]*$", " ", tweet)
+    tweet = tweet.lower()
+    tweet = re.sub(r"that's","that is",tweet)
+    tweet = re.sub(r"there's","there is",tweet)
+    tweet = re.sub(r"what's","what is",tweet)
+    tweet = re.sub(r"where's","where is",tweet)
+    tweet = re.sub(r"it's","it is",tweet)
+    tweet = re.sub(r"who's","who is",tweet)
+    tweet = re.sub(r"i'm","i am",tweet)
+    tweet = re.sub(r"she's","she is",tweet)
+    tweet = re.sub(r"he's","he is",tweet)
+    tweet = re.sub(r"they're","they are",tweet)
+    tweet = re.sub(r"who're","who are",tweet)
+    tweet = re.sub(r"ain't","am not",tweet)
+    tweet = re.sub(r"wouldn't","would not",tweet)
+    tweet = re.sub(r"shouldn't","should not",tweet)
+    tweet = re.sub(r"can't","can not",tweet)
+    tweet = re.sub(r"couldn't","could not",tweet)
+    tweet = re.sub(r"won't","will not",tweet)
+    tweet = re.sub(r"\W"," ",tweet)
+    tweet = re.sub(r"\d"," ",tweet)
+    tweet = re.sub(r"\s+[a-z]\s+"," ",tweet)
+    tweet = re.sub(r"\s+[a-z]$"," ",tweet)
+    tweet = re.sub(r"^[a-z]\s+"," ",tweet)
+    tweet = re.sub(r"\s+"," ",tweet)
+    # print(tweet)
+    sentiment = clf.predict(vectorizer.transform([tweet]).toarray())
+    # print(tweet, ":", sentiment)
+    if sentiment[0] == 1:
+        totalPositives += 1
+    else:
+        totalNegs += 1
+
+import matplotlib.pyplot as plt
+import numpy as np
+objects = ['Positive', 'Negative']
+y_pos = np.arange(len(objects))
+
+plt.bar(y_pos, [totalPositives, totalNegs],alpha=0.5)
+plt.xticks(y_pos, objects)
+plt.ylabel('Number')
+plt.title('Amount of Positive and Negative Tweets')
+
+plt.show()
+"""
