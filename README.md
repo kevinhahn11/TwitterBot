@@ -13,4 +13,4 @@ In this application you can:
 * Follow the user that tweeted
 * Select how many tweets you would like to interact with 
     
-Simply input "yes" or "no" for the boxes under retweeting, responding, favoriting, following and input any integer for the tweets that you want to interact with.
+Input "yes" or "no" for the boxes under retweeting, responding, favoriting, following and input any integer for the tweets that you want to interact with.
